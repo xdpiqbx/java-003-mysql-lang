@@ -76,8 +76,8 @@ SELECT name, age FROM people;
 SELECT DISTINCT age FROM people;
 SELECT DISTINCT age*3 FROM people;
 SELECT name, age FROM people WHERE age>20;
-SELECT name, age FROM people OFFSET 2; --OFFSET - пропустити перші два вивести з третього
-SELECT name, age FROM people LIMIT 1 OFFSET 1; --LIMIT 1 - вивести 1 запис
+SELECT name, age FROM people OFFSET 2; -- OFFSET - пропустити перші два вивести з третього
+SELECT name, age FROM people LIMIT 1 OFFSET 1; -- LIMIT 1 - вивести 1 запис
 SELECT val FROM simple_boolean;
 SELECT name, amount FROM money;
 SELECT * FROM birthday;
