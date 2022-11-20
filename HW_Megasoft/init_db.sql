@@ -1,9 +1,11 @@
+-- id IDENTITY PRIMARY KEY,
+
 CREATE TABLE worker (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name VARCHAR(1000), -- довжина має бути від 2 до 1000 символів включно
-    birthday DATE,  -- Рік у цій даті має бути більшим за 1900
-    level ENUM ('Trainee', 'Junior', 'Middle', 'Senior'),
-    salary INT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(1000) NOT NULL, -- довжина має бути від 2 до 1000 символів включно
+    birthday DATE NOT NULL,  -- Рік у цій даті має бути більшим за 1900
+    level ENUM ('Trainee', 'Junior', 'Middle', 'Senior') NOT NULL,
+    salary INT NOT NULL,
     CHECK (EXTRACT(YEAR FROM birthday) > 1900),
     CHECK (CHAR_LENGTH(name) > 1 AND CHAR_LENGTH(name) < 1000)
 );
@@ -35,16 +37,16 @@ CREATE TABLE worker (
 
 
 CREATE TABLE client (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(1000) NOT NULL -- довжина має бути від 2 до 1000 символів включно
     CHECK (CHAR_LENGTH(name) > 1 AND CHAR_LENGTH(name) < 1000)
 );
 
 CREATE TABLE project (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    client_id INT,
-    start_date TIMESTAMP,  -- Рік у цій даті має бути більшим за 1900
-    finish_date TIMESTAMP  -- Рік у цій даті має бути більшим за 1900
+    client_id INT NOT NULL,
+    start_date TIMESTAMP NOT NULL,  -- Рік у цій даті має бути більшим за 1900
+    finish_date TIMESTAMP NOT NULL -- Рік у цій даті має бути більшим за 1900
     CHECK (
         EXTRACT(YEAR FROM start_date) > 1900
         AND
@@ -53,7 +55,8 @@ CREATE TABLE project (
 );
 
 CREATE TABLE project_worker (
-    project_id INT,
-    worker_id INT
+    project_id INT NOT NULL,
+    worker_id INT NOT NULL
+    PRIMARY KEY (project_id, worker_id)
     -- первинний ключ для цієї таблиці - складений, пара (PROJECT_ID, WORKER_ID)
 );
