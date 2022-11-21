@@ -74,6 +74,12 @@ INSERT INTO department_worker (worker_id, department_id) VALUES
 (3, 2),
 (4, 1)
 
+INSERT INTO department_worker (worker_id, department_id) VALUES
+(1, 1),
+(2, 3),
+(3, 1)
+
+
 INSERT INTO project (name, department_id) VALUES
 ('Cold Water', 1),
 ('Black Ice', 2),
@@ -95,3 +101,92 @@ SELECT * FROM worker
     JOIN worker_details -- обєднати таблиці worker та worker_details
         ON worker.id = worker_details.worker_id
     WHERE sex = 'male'
+
+SELECT * FROM worker
+    JOIN department_worker
+    ON worker.id = department_worker.worker_id
+    WHERE department_id = 3
+
+SELECT worker.* FROM worker -- взяти дані лише з таблиці worker
+    JOIN department_worker
+    ON worker.id = department_worker.worker_id
+    WHERE department_id = 3
+
+-- У якому департаменті найбільше людей
+SELECT department_id, COUNT(worker_id)
+    FROM department_worker
+    GROUP BY department_id
+    ORDER BY COUNT(worker_id) DESC
+    LIMIT 1;
+
+-- Не враховує якщо в декількох відділах однакова кількість робітників
+SELECT * FROM department
+WHERE id IN (
+    SELECT department_id
+        FROM department_worker
+        GROUP BY department_id
+        ORDER BY COUNT(worker_id) DESC
+        LIMIT 1
+);
+
+--
+SELECT department_id, COUNT(worker_id)
+    FROM department_worker
+    GROUP BY department_id
+-- Після групування WHERE не можна, треба користуватись HAVING
+    HAVING COUNT(worker_id) = 2
+
+SELECT department_id, COUNT(worker_id)
+    FROM department_worker
+    GROUP BY department_id
+-- Після групування WHERE не можна, треба користуватись HAVING
+    HAVING COUNT(worker_id) IN (
+        SELECT COUNT(worker_id)
+            FROM department_worker
+            GROUP BY department_id
+            ORDER BY COUNT(worker_id) DESC
+            LIMIT 1
+    )
+
+-- ТУТ враховує якщо в декількох відділах однакова кількість робітників
+SELECT * FROM department
+WHERE id IN(
+    SELECT department_id
+        FROM department_worker
+        GROUP BY department_id
+        HAVING COUNT(worker_id) IN (
+            SELECT COUNT(worker_id)
+                FROM department_worker
+                GROUP BY department_id
+                ORDER BY COUNT(worker_id) DESC
+                LIMIT 1
+        )
+) -- ТУТ враховує якщо в декількох відділах однакова кількість робітників
+
+
+-- Вибрати тих хто не працює у жодному відділі
+-- або працюють у двох або більше відділах
+
+SELECT department_id, COUNT(worker_id)
+FROM department_worker
+GROUP BY department_id
+
+-- Працівники які ніде не працюють
+SELECT *, 'Free' FROM worker
+    WHERE id NOT IN (
+        SELECT worker_id FROM department_worker
+    )
+UNION
+-- Працівники які працюють в 2+ відділах
+SELECT *, '2+ deps'
+FROM worker
+WHERE id IN (
+    SELECT worker_id
+    FROM department_worker
+    GROUP BY worker_id
+    HAVING COUNT(department_id) >= 2
+)
+
+-- Вибрати усіх у кого у імені або у прізвищі є літера А
+SELECT * FROM worker
+WHERE LOWER(first_name) LIKE '%a%' OR LOWER(last_name) LIKE '%a'
