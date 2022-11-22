@@ -1,52 +1,28 @@
--- id IDENTITY PRIMARY KEY,
-
 CREATE TABLE worker (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id IDENTITY PRIMARY KEY,
     name VARCHAR(1000) NOT NULL, -- довжина має бути від 2 до 1000 символів включно
     birthday DATE NOT NULL,  -- Рік у цій даті має бути більшим за 1900
-    level ENUM ('Trainee', 'Junior', 'Middle', 'Senior') NOT NULL,
+    level ENUM ('Trainee', 'Junior', 'Middle', 'Senior'),
     salary INT NOT NULL,
     CHECK (EXTRACT(YEAR FROM birthday) > 1900),
     CHECK (CHAR_LENGTH(name) > 1 AND CHAR_LENGTH(name) < 1000)
 );
-
--- Test valid values
-# INSERT INTO worker
-#     (name, birthday, level, salary)
-# VALUES
-#     ('Bill', '1981-01-25', 'Trainee', 800),
-#     ('John', '1985-10-14', 'Junior', 850),
-#     ('Mary', '1989-02-10', 'Middle', 1100),
-#     ('Adam', '1991-11-01', 'Senior', 1900)
-
--- Test invalid values
-# INSERT INTO worker
-#     (name, birthday, level, salary)
-# VALUES
-#     ('Duncan', '1900-01-25', 'Senior', 800)
---
-# INSERT INTO worker
-#     (name, birthday, level, salary)
-# VALUES
-#     ('A', '1901-01-01', 'Senior', 800)
---
-# INSERT INTO worker
-#     (name, birthday, level, salary)
-# VALUES
-#     ('Steve', '1981-01-25', 'Batman', 800)
-
+ALTER TABLE worker
+    ALTER COLUMN birthday TIMESTAMP NOT NULL
 
 CREATE TABLE client (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id IDENTITY PRIMARY KEY,
     name VARCHAR(1000) NOT NULL -- довжина має бути від 2 до 1000 символів включно
     CHECK (CHAR_LENGTH(name) > 1 AND CHAR_LENGTH(name) < 1000)
 );
 
 CREATE TABLE project (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    client_id INT NOT NULL,
-    start_date TIMESTAMP NOT NULL,  -- Рік у цій даті має бути більшим за 1900
-    finish_date TIMESTAMP NOT NULL -- Рік у цій даті має бути більшим за 1900
+    id IDENTITY PRIMARY KEY,
+    client_id BIGINT NOT NULL,
+    start_date TIMESTAMP, -- Рік у цій даті має бути більшим за 1900
+    finish_date TIMESTAMP, -- Рік у цій даті має бути більшим за 1900
+    FOREIGN KEY (client_id)
+        REFERENCES client(id),
     CHECK (
         EXTRACT(YEAR FROM start_date) > 1900
         AND
@@ -55,8 +31,11 @@ CREATE TABLE project (
 );
 
 CREATE TABLE project_worker (
-    project_id INT NOT NULL,
-    worker_id INT NOT NULL
-    PRIMARY KEY (project_id, worker_id)
-    -- первинний ключ для цієї таблиці - складений, пара (PROJECT_ID, WORKER_ID)
+    project_id BIGINT NOT NULL,
+    worker_id BIGINT NOT NULL,
+    PRIMARY KEY (project_id, worker_id),
+    FOREIGN KEY (project_id)
+        REFERENCES project(id),
+    FOREIGN KEY (worker_id)
+        REFERENCES worker(id)
 );

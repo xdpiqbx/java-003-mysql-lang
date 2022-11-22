@@ -31,6 +31,7 @@ CREATE TABLE department_worker(
     department_id BIGINT NOT NULL,
     PRIMARY KEY (worker_id, department_id),
     FOREIGN KEY (worker_id)
+    FOREIGN KEY (worker_id)
         REFERENCES worker(id),
     FOREIGN KEY (department_id)
         REFERENCES department(id)
