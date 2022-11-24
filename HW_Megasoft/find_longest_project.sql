@@ -1,5 +1,5 @@
 SELECT
-    id AS name,
+    CONCAT ('Project ', id) AS name,
     DATEDIFF(
         MONTH,
         CAST (start_date AS DATE),
